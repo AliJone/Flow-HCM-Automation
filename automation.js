@@ -1,14 +1,35 @@
 const { Builder, By, until } = require('selenium-webdriver');
-require('chromedriver');
+const nodemailer = require('nodemailer');
 
-// Rest of your script
+// Configure the email transporter
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'alijone754rats@gmail.com',
+        pass: 'eqey mexg bmlp kjhl'
+    }
+});
 
-const express = require('express');
+// Function to send email
+async function sendEmail(subject, text, recipientEmail) {
+    let mailOptions = {
+        from: 'alijone754rats@gmail.com',
+        to: recipientEmail,
+        subject: subject,
+        text: text
+    };
 
-const app = express();
-const port = 3000; // You can use any available port
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log('Error sending email:', error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
 
-async function automateLogin(username, password) {
+
+async function automateLogin(username, password, recipientEmail) {
     let driver = await new Builder().forBrowser('chrome').build();
 
     try {
@@ -49,38 +70,28 @@ async function automateLogin(username, password) {
         }, 10000);
         await driver.findElement(By.className('btn-SignOut')).click();
         await driver.sleep(10000);
-        
+        await sendEmail("Login Successful", "Your login was successful for account: " + username, recipientEmail);
+
+    } catch (error) {
+        // If an error occurs
+        await sendEmail("Login Error", "An error occurred during login for account: " + username + ". Error: " + error.message, recipientEmail);
     } finally {
         await driver.quit();
     }
 }
 
 // Array of credentials
-
+const credentials = [
+    { username: 'ali.jone@deltabluecarbon.com', password: 'Ali123', email: 'a.jone.23031@khi.iba.edu.pk' },
+    // { username: 'ali.jone@deltabluecarbon.com', password: 'Ali123' },
+    // { username: 'ali.jone@deltabluecarbon.com', password: 'Ali123' },
+];
 
 // Iterate over each set of credentials
-// async function runScriptForMultipleAccounts(username, password) {
-//         await automateLogin(username, password);
-// }
-
-app.get('/automateLogin', async (req, res) => {
-    const { id, password } = req.query;
-
-    if (!id || !password) {
-        return res.status(400).send('Missing id or password');
+async function runScriptForMultipleAccounts() {
+    for (const credential of credentials) {
+        await automateLogin(credential.username, credential.password, credential.email);
     }
+}
 
-    try {
-        await automateLogin(id, password);
-        res.send('Login automation completed successfully');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('An error occurred during automation');
-    }
-});
-
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-});
-
-// runScriptForMultipleAccounts();
+runScriptForMultipleAccounts();
