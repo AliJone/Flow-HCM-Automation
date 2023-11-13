@@ -9,8 +9,17 @@ async function automateLogin(username, password) {
 
     try {
         await driver.get('https://merlinswood.flowhcm.com/#/signin');
-        await driver.sleep(10000);
-        
+        // await driver.sleep(10000);
+        //wait until loading element is gone
+        await driver.wait(async () => {
+            const elements = await driver.findElements(By.className('c-spinner2'));
+            if (elements.length === 0) {
+                return true;
+            }
+            const style = await elements[0].getAttribute('style');
+            return style.includes('display: none');
+        }, 10000);
+
         let signOutButtonPresent = await driver.findElements(By.className('btn-SignOut')).then(elements => elements.length > 0);
         
         if (signOutButtonPresent) {
@@ -25,8 +34,15 @@ async function automateLogin(username, password) {
         await usernameInput.sendKeys(username);
         await driver.findElement(By.id('password')).sendKeys(password);
         await driver.findElement(By.className('sign-in-btn1')).click();
-        await driver.sleep(10000);
         await driver.wait(until.elementLocated(By.className('btn-SignOut')), 10000);
+        await driver.wait(async () => {
+            const elements = await driver.findElements(By.className('modal-backdrop'));
+            if (elements.length === 0) {
+                return true;
+            }
+            const style = await elements[0].getAttribute('style');
+            return style.includes('display: none');
+        }, 10000);
         await driver.findElement(By.className('btn-SignOut')).click();
         await driver.sleep(10000);
         
@@ -36,16 +52,12 @@ async function automateLogin(username, password) {
 }
 
 // Array of credentials
-const credentials = [
-    { username: 'ali.jone@deltabluecarbon.com', password: 'Ali123' },
-    // { username: 'ali.jone@deltabluecarbon.com', password: 'Ali123' },
-    // { username: 'ali.jone@deltabluecarbon.com', password: 'Ali123' },
-];
+
 
 // Iterate over each set of credentials
-async function runScriptForMultipleAccounts(username, password) {
-        await automateLogin(username, password);
-}
+// async function runScriptForMultipleAccounts(username, password) {
+//         await automateLogin(username, password);
+// }
 
 app.get('/automateLogin', async (req, res) => {
     const { id, password } = req.query;
@@ -67,4 +79,4 @@ app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
 
-runScriptForMultipleAccounts();
+// runScriptForMultipleAccounts();
