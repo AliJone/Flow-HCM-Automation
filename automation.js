@@ -1,4 +1,8 @@
 const { Builder, By, until } = require('selenium-webdriver');
+const express = require('express');
+
+const app = express();
+const port = 3000; // You can use any available port
 
 async function automateLogin(username, password) {
     let driver = await new Builder().forBrowser('chrome').build();
@@ -39,10 +43,28 @@ const credentials = [
 ];
 
 // Iterate over each set of credentials
-async function runScriptForMultipleAccounts() {
-    for (const credential of credentials) {
-        await automateLogin(credential.username, credential.password);
-    }
+async function runScriptForMultipleAccounts(username, password) {
+        await automateLogin(username, password);
 }
+
+app.get('/automateLogin', async (req, res) => {
+    const { id, password } = req.query;
+
+    if (!id || !password) {
+        return res.status(400).send('Missing id or password');
+    }
+
+    try {
+        await automateLogin(id, password);
+        res.send('Login automation completed successfully');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred during automation');
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+});
 
 runScriptForMultipleAccounts();
