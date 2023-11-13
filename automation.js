@@ -1,4 +1,6 @@
-const { Builder, By, until } = require('selenium-webdriver');
+
+const { Builder, By, until} = require('selenium-webdriver');
+const firefox = require('selenium-webdriver/firefox');
 const nodemailer = require('nodemailer');
 
 // Configure the email transporter
@@ -19,7 +21,7 @@ async function sendEmail(subject, text, recipientEmail) {
         text: text
     };
 
-    transporter.sendMail(mailOptions, function(error, info){
+    transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             console.log('Error sending email:', error);
         } else {
@@ -28,12 +30,19 @@ async function sendEmail(subject, text, recipientEmail) {
     });
 }
 
-
 async function automateLogin(username, password, recipientEmail) {
-    let driver = await new Builder().forBrowser('chrome').build();
+    let options = new firefox.Options();
+    // For headless mode (no GUI), uncomment the next line
+    // options.headless();
+
+    let driver = await new Builder()
+        .forBrowser('firefox')
+        .setFirefoxOptions(options)
+        .build();
 
     try {
         await driver.get('https://merlinswood.flowhcm.com/#/signin');
+        // [Rest of your selenium code]
         // await driver.sleep(10000);
         //wait until loading element is gone
         await driver.wait(async () => {
@@ -46,7 +55,7 @@ async function automateLogin(username, password, recipientEmail) {
         }, 10000);
 
         let signOutButtonPresent = await driver.findElements(By.className('btn-SignOut')).then(elements => elements.length > 0);
-        
+
         if (signOutButtonPresent) {
             await driver.findElement(By.className('profile-box')).click();
             let lastDropdownItem = await driver.wait(until.elementLocated(By.css('.dropdown-menu li.last')), 10000);
@@ -73,21 +82,17 @@ async function automateLogin(username, password, recipientEmail) {
         await sendEmail("Login Successful", "Your login was successful for account: " + username, recipientEmail);
 
     } catch (error) {
-        // If an error occurs
         await sendEmail("Login Error", "An error occurred during login for account: " + username + ". Error: " + error.message, recipientEmail);
     } finally {
         await driver.quit();
     }
 }
 
-// Array of credentials
 const credentials = [
     { username: 'ali.jone@deltabluecarbon.com', password: 'Ali123', email: 'a.jone.23031@khi.iba.edu.pk' },
-    // { username: 'ali.jone@deltabluecarbon.com', password: 'Ali123' },
-    // { username: 'ali.jone@deltabluecarbon.com', password: 'Ali123' },
+    // ... other credentials
 ];
 
-// Iterate over each set of credentials
 async function runScriptForMultipleAccounts() {
     for (const credential of credentials) {
         await automateLogin(credential.username, credential.password, credential.email);
