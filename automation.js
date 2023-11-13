@@ -1,4 +1,8 @@
 const { Builder, By, until } = require('selenium-webdriver');
+require('chromedriver');
+
+// Rest of your script
+
 const express = require('express');
 
 const app = express();
