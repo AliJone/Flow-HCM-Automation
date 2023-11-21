@@ -33,7 +33,7 @@ async function sendEmail(subject, text, recipientEmail) {
 async function automateLogin(username, password, recipientEmail) {
     let options = new firefox.Options();
     // For headless mode (no GUI), uncomment the next line
-    // options.headless();
+    options.headless();
 
     let driver = await new Builder()
         .forBrowser('firefox')
@@ -52,7 +52,7 @@ async function automateLogin(username, password, recipientEmail) {
             }
             const style = await elements[0].getAttribute('style');
             return style.includes('display: none');
-        }, 10000);
+        }, 100000);
 
         let signOutButtonPresent = await driver.findElements(By.className('btn-SignOut')).then(elements => elements.length > 0);
 
@@ -63,12 +63,13 @@ async function automateLogin(username, password, recipientEmail) {
             await driver.wait(until.elementLocated(By.id('username')), 10000);
         }
 
-        await driver.wait(until.elementLocated(By.id('username')), 10000);
+        await driver.wait(until.elementLocated(By.id('username')), 100000);
         let usernameInput = await driver.findElement(By.id('username'));
         await usernameInput.sendKeys(username);
         await driver.findElement(By.id('password')).sendKeys(password);
         await driver.findElement(By.className('sign-in-btn1')).click();
-        await driver.wait(until.elementLocated(By.className('btn-SignOut')), 10000);
+        // await driver.wait(until.elementLocated(By.className('btn-SignOut')), 100000);
+        await driver.wait(until.elementLocated(By.className('sign-btn')), 100000);
         await driver.wait(async () => {
             const elements = await driver.findElements(By.className('modal-backdrop'));
             if (elements.length === 0) {
@@ -77,7 +78,8 @@ async function automateLogin(username, password, recipientEmail) {
             const style = await elements[0].getAttribute('style');
             return style.includes('display: none');
         }, 10000);
-        await driver.findElement(By.className('btn-SignOut')).click();
+        // await driver.findElement(By.className('btn-SignOut')).click();
+        await driver.findElement(By.className('sign-btn')).click();
         await driver.sleep(10000);
         await sendEmail("Login Successful", "Your login was successful for account: " + username, recipientEmail);
 
@@ -90,6 +92,8 @@ async function automateLogin(username, password, recipientEmail) {
 
 const credentials = [
     { username: 'ali.jone@deltabluecarbon.com', password: 'Ali123', email: 'a.jone.23031@khi.iba.edu.pk' },
+    { username: 'ali.haider@deltabluecarbon.com', password: 'Ali@123', email: 'm.haider.23047@khi.iba.edu.pk' },
+    { username: 'muhammad.arham@deltabluecarbon.com', password: 'Arham123', email: 'arrhamjohar.10@gmail.com' },
     // ... other credentials
 ];
 
