@@ -68,8 +68,8 @@ async function automateLogin(username, password, recipientEmail) {
         await usernameInput.sendKeys(username);
         await driver.findElement(By.id('password')).sendKeys(password);
         await driver.findElement(By.className('sign-in-btn1')).click();
-        // await driver.wait(until.elementLocated(By.className('btn-SignOut')), 100000);
-        await driver.wait(until.elementLocated(By.className('sign-btn')), 100000);
+        await driver.wait(until.elementLocated(By.className('btn-SignOut')), 100000);
+        // await driver.wait(until.elementLocated(By.className('sign-btn')), 100000);
         await driver.wait(async () => {
             const elements = await driver.findElements(By.className('modal-backdrop'));
             if (elements.length === 0) {
@@ -78,8 +78,8 @@ async function automateLogin(username, password, recipientEmail) {
             const style = await elements[0].getAttribute('style');
             return style.includes('display: none');
         }, 10000);
-        // await driver.findElement(By.className('btn-SignOut')).click();
-        await driver.findElement(By.className('sign-btn')).click();
+        await driver.findElement(By.className('btn-SignOut')).click();
+        // await driver.findElement(By.className('sign-btn')).click();
         await driver.sleep(10000);
         await sendEmail("Login Successful", "Your login was successful for account: " + username, recipientEmail);
 
