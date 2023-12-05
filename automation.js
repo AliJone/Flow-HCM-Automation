@@ -92,8 +92,8 @@ async function automateLogin(username, password, recipientEmail) {
 
 const credentials = [
     { username: 'ali.jone@deltabluecarbon.com', password: 'Ali123', email: 'a.jone.23031@khi.iba.edu.pk' },
-    { username: 'ali.haider@deltabluecarbon.com', password: 'Ali@123', email: 'm.haider.23047@khi.iba.edu.pk' },
-    { username: 'muhammad.arham@deltabluecarbon.com', password: 'Arham123', email: 'arrhamjohar.10@gmail.com' },
+    // { username: 'ali.haider@deltabluecarbon.com', password: 'Ali@123', email: 'm.haider.23047@khi.iba.edu.pk' },
+    // { username: 'muhammad.arham@deltabluecarbon.com', password: 'Arham123', email: 'arrhamjohar.10@gmail.com' },
     // ... other credentials
 ];
 
